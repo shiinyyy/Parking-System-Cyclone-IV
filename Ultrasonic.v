@@ -139,12 +139,12 @@ module Ultrasonic
 (
     input   wire            sys_clk         ,//100MHz
     input   wire            sys_rst_n       ,//active low
-    input   wire            echo            ,//回响信号
+    input   wire            echo            ,//
     
 
 
-    output  reg     [12:0]  data_bin        ,//数据
-    output  reg             trig             //触发信号
+	output  reg     [12:0]  data_bin        ,//data
+    output  reg             trig             //
 );
  
 //parameter define
@@ -153,15 +153,15 @@ parameter   CNT_10US_MAX  = 10'd1000 ;//10us/10ns = 1000
  
 //wire or reg define
 reg     [23:0]  cnt_100ms   ;
-reg             echo_r      ;//对echo打一拍的信号
-reg     [21:0]  cnt_echo    ;//计数echo的高电平时间
-wire            echo_neg    ;//echo信号的下降沿
+reg             echo_r      ;//
+reg     [21:0]  cnt_echo    ;//
+wire            echo_neg    ;//
 reg             echo_neg_r  ;
 reg     [21:0]  cnt_echo_r  ;
  
 //main code
  
-//100ms的周期计数
+//100ms
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if(!sys_rst_n)
         cnt_100ms<=24'd0;
@@ -171,7 +171,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
         cnt_100ms<=cnt_100ms+1'b1;
 end
  
-//trig:触发脉冲trig周期为100ms，高电平时间为10us
+//trig
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if(!sys_rst_n)
         trig<=1'b0;
@@ -181,7 +181,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
         trig<=1'b0;
 end 
  
-//echo_r:打一拍
+//echo_r
 assign  echo_neg = (~echo) & echo_r ;// ? 1'b1 : 1'b0 ;
 
 always @(posedge sys_clk or negedge sys_rst_n) begin
@@ -190,7 +190,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
     else
         echo_r<=echo;
 end
-//cnt_echo:计数echo信号的高电平时间
+//cnt_echo
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if(!sys_rst_n)
         cnt_echo<=22'd0;
@@ -217,7 +217,7 @@ always @(posedge sys_clk or negedge sys_rst_n) begin
         echo_neg_r<=echo_neg;
 end 
  
-//计算距离s=N*10*340_000/1000_000_000/2 mm = N*0.0017 mm = N*17/10000 ;
+//s=N*10*340_000/1000_000_000/2 mm = N*0.0017 mm = N*17/10000 ;
 //data_bin
 always @(posedge sys_clk or negedge sys_rst_n) begin
     if(!sys_rst_n)
