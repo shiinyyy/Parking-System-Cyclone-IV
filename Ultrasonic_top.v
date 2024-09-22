@@ -50,10 +50,10 @@ Ultrasonic      Ultrasonic_inst
 (
     .sys_clk  (sys_clk)       ,//100MHz
     .sys_rst_n(sys_rst)       ,//active low
-    .echo     (echo1)       ,//回响信号
+    .echo     (echo1)       ,
         
     .data_bin (data1)       ,//数据
-    .trig     (trig1)        //触发信号
+    .trig     (trig1)        
 );
 
 
@@ -61,10 +61,10 @@ Ultrasonic      Ultrasonic_inst2
 (
     .sys_clk  (sys_clk)       ,//100MHz
     .sys_rst_n(sys_rst)       ,//active low
-    .echo     (echo2)       ,//回响信号
+    .echo     (echo2)       ,
         
     .data_bin (data2)       ,//数据
-    .trig     (trig2)        //触发信号
+    .trig     (trig2)        
 );
 
 counter     counter_inst
