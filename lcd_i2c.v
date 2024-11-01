@@ -27,6 +27,21 @@ module lcd_i2c (
     // LCD data to display "Hello"
     assign lcd_data = 8'h48; // ASCII for 'H'
     assign start = 1'b1;     // Start condition
+    reg [7:0] lcd_data_reg;
+    reg start_reg;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            lcd_data_reg <= 8'h48; // ASCII for 'H'
+            start_reg <= 1'b0;
+        end else begin
+            lcd_data_reg <= 8'h48;
+            start_reg <= 1'b1;     // Start condition
+        end
+    end
+    
+    assign lcd_data = lcd_data_reg;
+    assign start = start_reg;
 
 endmodule
 
