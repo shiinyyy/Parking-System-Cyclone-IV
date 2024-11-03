@@ -20,30 +20,30 @@ module lcd_i2c (
         .scl(i2c_scl)
     );
 
-    // Assign outputs to FPGA pins
-    assign sda = i2c_sda;
-    assign scl = i2c_scl;
+//     // Assign outputs to FPGA pins
+//     assign sda = i2c_sda;
+//     assign scl = i2c_scl;
 
-    // LCD data to display "Hello"
-    assign lcd_data = 8'h48; // ASCII for 'H'
-    assign start = 1'b1;     // Start condition
-    reg [7:0] lcd_data_reg;
-    reg start_reg;
+//     // LCD data to display "Hello"
+//     assign lcd_data = 8'h48; // ASCII for 'H'
+//     assign start = 1'b1;     // Start condition
+//     reg [7:0] lcd_data_reg;
+//     reg start_reg;
     
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            lcd_data_reg <= 8'h48; // ASCII for 'H'
-            start_reg <= 1'b0;
-        end else begin
-            lcd_data_reg <= 8'h48;
-            start_reg <= 1'b1;     // Start condition
-        end
-    end
+//     always @(posedge clk or negedge rst_n) begin
+//         if (!rst_n) begin
+//             lcd_data_reg <= 8'h48; // ASCII for 'H'
+//             start_reg <= 1'b0;
+//         end else begin
+//             lcd_data_reg <= 8'h48;
+//             start_reg <= 1'b1;     // Start condition
+//         end
+//     end
     
-    assign lcd_data = lcd_data_reg;
-    assign start = start_reg;
+//     assign lcd_data = lcd_data_reg;
+//     assign start = start_reg;
 
-endmodule
+// endmodule
 
 
 // module lcd_i2c (
@@ -186,74 +186,73 @@ endmodule
 //     assign scl = i2c_clk;
 //     assign sda = (i2c_write) ? i2c_data[7] : 1'bz;
 
-// module lcd_i2c (
-//     input 		clk,
-//     input 		rst_n,
-// 	 output reg lcd_e, lcd_rs,
-// 	 output reg [7:0] lcd_data
-// );
+module lcd_i2c (
+    input 		clk,
+    input 		rst_n,
+    output reg lcd_e, lcd_rs,
+    output reg [7:0] lcd_data
+);
 
-// integer i = 0;
-// integer j = 1;
+integer i = 0;
+integer j = 1;
 
-// reg [7:0] Datas [1:19];
+reg [7:0] Datas [1:19];
 		
-// always @(posedge clk) 
-// begin
-// Datas[1]   =  8'h38;   	//-- control instruction : configure - 2 lines, 5x7 matrix --
-// Datas[2]   =  8'h0C;   	//-- control instruction : Display on, cursor off --
-// Datas[3]   =  8'h06;   	//-- control instruction : Increment cursor : shift cursor to right --
-// Datas[4]   =  8'h01;   	//-- control instruction : clear display screen --
-// Datas[5]   =  8'h80;   	//-- control instruction : force cursor to begin at first line --
+always @(posedge clk) 
+begin
+Datas[1]   =  8'h38;   	//-- control instruction : configure - 2 lines, 5x7 matrix --
+Datas[2]   =  8'h0C;   	//-- control instruction : Display on, cursor off --
+Datas[3]   =  8'h06;   	//-- control instruction : Increment cursor : shift cursor to right --
+Datas[4]   =  8'h01;   	//-- control instruction : clear display screen --
+Datas[5]   =  8'h80;   	//-- control instruction : force cursor to begin at first line --
 
-// // Parking System 
-// Datas[6]   =  8'h50;   	
-// Datas[7]   =  8'h61;   	
-// Datas[8]   =  8'h72;   	
-// Datas[9]   =  8'h6B;   	
-// Datas[10]  =  8'h69;   	
-// Datas[11]  =  8'h6E;   	
-// Datas[12]  =  8'h67;
-// Datas[13]  =  8'h20; 
-// Datas[14]  =  8'h53;   	
-// Datas[15]  =  8'h79;   	
-// Datas[16]  =  8'h73;   
-// Datas[17]  =  8'h74;   	
-// Datas[18]  =  8'h65;   	
-// Datas[19]  =  8'h6D;   	  	 	
-// // Datas[20]  =  8'hC0;   	//-- control instruction : force cursor to move to 2nd Line --
+// Parking System 
+Datas[6]   =  8'h50;   	
+Datas[7]   =  8'h61;   	
+Datas[8]   =  8'h72;   	
+Datas[9]   =  8'h6B;   	
+Datas[10]  =  8'h69;   	
+Datas[11]  =  8'h6E;   	
+Datas[12]  =  8'h67;
+Datas[13]  =  8'h20; 
+Datas[14]  =  8'h53;   	
+Datas[15]  =  8'h79;   	
+Datas[16]  =  8'h73;   
+Datas[17]  =  8'h74;   	
+Datas[18]  =  8'h65;   	
+Datas[19]  =  8'h6D;   	  	 	
+// Datas[20]  =  8'hC0;   	//-- control instruction : force cursor to move to 2nd Line --
 
-// end		
+end		
 		
-// always @(posedge clk) begin
+always @(posedge clk) begin
 
-// //-- Delay for writing data
+//-- Delay for writing data
 	
-//   if (i <= 1000000) begin
-//   i = i + 1; lcd_e = 1;
-//   lcd_data = Datas[j];
-//   end
+  if (i <= 1000000) begin
+  i = i + 1; lcd_e = 1;
+  lcd_data = Datas[j];
+  end
   
-//   else if (i > 1000000 & i < 2000000) begin
-//   i = i + 1; lcd_e = 0;
-//   end
+  else if (i > 1000000 & i < 2000000) begin
+  i = i + 1; lcd_e = 0;
+  end
   
-//   else if (i == 2000000) begin
-//   j = j + 1; i = 0;
-//   end
-//   else i = 0;
+  else if (i == 2000000) begin
+  j = j + 1; i = 0;//   end
+  else i = 0;
   
-//  //-- LCD_RS signal should be set to 0 for writing commands and to 1 for writing data
+ //-- LCD_RS signal should be set to 0 for writing commands and to 1 for writing data
 
-//   if (j <= 5 ) lcd_rs = 0;  
-//   else if (j > 5 & j< 22) lcd_rs = 1;   
-//   else if (j == 22) lcd_rs = 0;
-//   else if (j > 22) begin 
-//   lcd_rs = 1; j = 5;
-//   end
+  if (j <= 5 ) lcd_rs = 0;  
+  else if (j > 5 & j< 22) lcd_rs = 1;   
+  else if (j == 22) lcd_rs = 0;
+  else if (j > 22) begin 
+  lcd_rs = 1; j = 5;
+  end
  
-//  end
+ end
+endmodule
+
+
 // endmodule
-
-
-// // endmodule
