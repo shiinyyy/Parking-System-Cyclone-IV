@@ -16,10 +16,10 @@ module lcd_top (
     master_i2c master_i2c_inst(
         .clk				(clk),
         .rst				(rst),
-		  .data				(data),
-		  .rs					(rs),
-		  .rw					(rw),
-		  .en					(en)
+	.data				(data),
+	.rs				(rs),
+	.rw				(rw),
+	.en				(en)
 /*      .start				(start),
         .data_in			(lcd_data),
         .sda				(i2c_sda),
@@ -29,7 +29,7 @@ module lcd_top (
     );
 	 
 	 lcd_i2c lcd_i2c_inst(
-			.clk				(clk),
+			.clk			(clk),
 			.rst_n			(rst_n),
 			.lcd_e			(lcd_e),
 			.lcd_rs			(lcd_rs),
