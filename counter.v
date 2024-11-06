@@ -18,13 +18,13 @@ reg             outflag;
 
 reg     [26:0]  cnt_100ms;
 
-
+//set the initial carpark number
 initial
     begin
         totalpark = TOTALPARK;
     end
     
- 
+ //100ms counter for 100ms flag generation
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         cnt_100ms <= 27'd0;
@@ -33,7 +33,7 @@ always@(posedge sys_clk or negedge sys_rst)
     else    
         cnt_100ms <= cnt_100ms + 27'd1;
         
-        
+//generate a 100ms flag for SPI start signal        
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         cnt100_flag <= 1'b0;
@@ -44,7 +44,7 @@ always@(posedge sys_clk or negedge sys_rst)
 
 
 
- 
+//if the distance data smaller than the threshold, enter flag change to 1, if smaller than the threshold, change to 0
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         enterflag <= 1'b0;
@@ -57,7 +57,7 @@ always@(posedge sys_clk or negedge sys_rst)
         
         
         
-        
+ //same with enter flag    
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)  
         outflag <= 1'b0;
@@ -70,7 +70,7 @@ always@(posedge sys_clk or negedge sys_rst)
         
         
   
- 
+ //when the enter flag is done, enter count plus 1, and after 1 system period, enter count clear to 0
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         entercount <= 2'd0;
@@ -80,7 +80,7 @@ always@(posedge sys_clk or negedge sys_rst)
         entercount <= 2'd0;
   
   
-        
+ //same with enter count       
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         outcount <= 2'd0;
@@ -89,7 +89,7 @@ always@(posedge sys_clk or negedge sys_rst)
     else
         outcount <= 2'd0;
         
-        
+ //calculate the net enpty parking space by adding enter/out counter and initial carpark number together       
 always@(posedge sys_clk or negedge sys_rst)
     if(sys_rst == 1'b0)
         totalpark <= TOTALPARK;
