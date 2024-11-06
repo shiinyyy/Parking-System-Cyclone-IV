@@ -1,4 +1,4 @@
-/*module Ultrasonic
+module Ultrasonic
 #(
 	parameter	CNT100_MAX = 26'd4_999_9999,
 	parameter	CNT20_MAX = 10'd999
@@ -24,8 +24,7 @@ reg		[31:0]		time_sum;
 
 reg				    echo_flag;
 
-
-
+//100ms counter 
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		cnt_100ms <= 27'd0;
@@ -35,7 +34,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		cnt_100ms <= cnt_100ms + 27'd1;
 		
 		
-
+//100ms flag based on 100ms counter 
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		cnt100_flag <= 1'b0;
@@ -45,7 +44,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		cnt100_flag <= 1'b0;
 		
 		
-		
+//generated 20us pulse flag		
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		cnt20adding_flag <= 1'b0;
@@ -58,7 +57,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		
 		
 		
-
+//20us counter based on 20us flag
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		cnt_20us <= 11'd0;
@@ -70,7 +69,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		cnt_20us <= 11'd0;
 
 
-
+//based on 20us counter, to generate trig for ultrasonic sensor
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		trig <= 1'b0;
@@ -83,14 +82,14 @@ always@(posedge sys_clk or negedge sys_rst)
 		trig <= trig;
 		
 
-
+//copy a same signal for echo but delay 1 system period
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		echo1 <= 1'b0;
 	else
 		echo1 <= echo;
 		
-
+//copy a same signal for echo1 but delay 1 system period
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		echo2 <= 1'b0;
@@ -99,7 +98,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		
 		
 		
-
+//if echo2 is high, start counting time_sum
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		time_sum <= 32'd0;
@@ -112,7 +111,7 @@ always@(posedge sys_clk or negedge sys_rst)
 		time_sum <= time_sum;
 		
         
-        
+//if echo1 is low and echo2 is high, generate a flag for result calculation        
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
         echo_flag <= 1'b0;
@@ -120,7 +119,7 @@ always@(posedge sys_clk or negedge sys_rst)
         echo_flag <= (~echo1) & echo2;
     	
 
-
+//when the calculation flag is ready, start to convert the value in time_sum to distance
 always@(posedge sys_clk or negedge sys_rst)
 	if(sys_rst == 1'b0)
 		data <= 20'd0;
@@ -130,10 +129,14 @@ always@(posedge sys_clk or negedge sys_rst)
 		data <= data;
 		
 		
-endmodule*/
+endmodule
 
 
 
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//first version for testing, with the same function
 
 module Ultrasonic
 (
