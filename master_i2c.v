@@ -16,11 +16,11 @@ module master_i2c (
     localparam STATE_START = 1;
     localparam STATE_ADDRESS = 2;
     localparam STATE_ACK = 3;
-	 localparam STATE_WRITE = 4;
-	 localparam STATE_STOP = 5;
+    localparam STATE_WRITE = 4;
+    localparam STATE_STOP = 5;
 	 
-	 // LCD I2C address 0x27
-	 localparam [7:0] LCD_ADDR = 8'h27;
+    // LCD I2C address 0x27
+    localparam [7:0] LCD_ADDR = 8'h27;
 	 
     reg [2:0] state_reg, state_next;
     reg [7:0] data_reg, data_next;
