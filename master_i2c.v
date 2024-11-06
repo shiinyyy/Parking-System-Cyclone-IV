@@ -1,27 +1,28 @@
-/*module i2c_master (
-    input wire clk,
-    input wire rst_n,
-    input wire start,
-    input wire [7:0] data_in,
-    output reg sda,
-    output reg scl
-);
-*/
 module master_i2c (
-    input wire clk,
-    input wire rst,
-    output wire [7:0] data,
-    output wire rs,
-    output wire rw,
-    output wire en
+    input  wire clk,
+    input  wire rst,
+	 output wire scl,
+	 inout  wire sda
 );
 
-    // State definitions
-    localparam STATE_INIT = 0;
-    localparam STATE_IDLE = 1;
-    localparam STATE_WRITE = 2;
-
-    reg [1:0] state_reg, state_next;
+	 wire i2c_sda = 8'b1;
+	 wire i2c_scl = 8'b1;
+	 
+	 assign sda = i2c_sda;
+	 assign scl = i2c_scl;
+	 
+    // FSM definitions
+    localparam STATE_IDLE = 0;
+    localparam STATE_START = 1;
+    localparam STATE_ADDRESS = 2;
+    localparam STATE_ACK = 3;
+	 localparam STATE_WRITE = 4;
+	 localparam STATE_STOP = 5;
+	 
+	 // LCD I2C address 0x27
+	 localparam [7:0] LCD_ADDR = 8'h27;
+	 
+    reg [2:0] state_reg, state_next;
     reg [7:0] data_reg, data_next;
     reg rs_reg, rs_next;
     reg rw_reg, rw_next;
@@ -32,24 +33,25 @@ module master_i2c (
     always @(posedge clk or posedge rst) 
 	 begin
         if (rst) begin
-            state_reg <= STATE_INIT;
+            state_reg <= STATE_IDLE;
             data_reg <= 8'b0;
             rs_reg <= 1'b0;
             rw_reg <= 1'b0;
             en_reg <= 1'b0;
-            init_counter <= 16'd0;
+            init_counter <= 15'b0;
         end else begin
             state_reg <= state_next;
             data_reg <= data_next;
             rs_reg <= rs_next;
             rw_reg <= rw_next;
             en_reg <= en_next;
-            if (state_reg == STATE_INIT) begin
+            if (state_reg == STATE_IDLE) begin
                 init_counter <= init_counter + 1;
             end
         end
     end
 
+	// open case for each state
     always @(*) 
 	 begin
         state_next = state_reg;
@@ -59,27 +61,27 @@ module master_i2c (
         en_next = en_reg;
 
         case (state_reg)
-            STATE_INIT: begin
-                if (init_counter < 16'd10000) begin
+            STATE_START: begin
+                if (init_counter < 16'h1) begin
                     // Wait for power-up
-                    state_next = STATE_INIT;
-                end else if (init_counter < 16'd20000) begin
+                    state_next = STATE_START;
+                end else if (init_counter < 16'h2) begin
                     // Function set: 8-bit, 2 line, 5x8 dots
-                    data_next = 8'b00111000;
-                    rs_next = 1'b0;
-                    rw_next = 1'b0;
-                    en_next = 1'b1;
-                    state_next = STATE_WRITE;
-                end else if (init_counter < 16'd30000) begin
-                    // Display on/off control: display on, cursor off, blink off
-                    data_next = 8'b00001100;
-                    rs_next = 1'b0;
-                    rw_next = 1'b0;
-                    en_next = 1'b1;
-                    state_next = STATE_WRITE;
-                end else if (init_counter < 16'd40000) begin
-                    // Clear display
                     data_next = 8'b00000001;
+                    rs_next = 1'b0;
+                    rw_next = 1'b0;
+                    en_next = 1'b1;
+                    state_next = STATE_ADDRESS;
+                end else if (init_counter < 16'h3) begin
+                    // Display on/off control: display on, cursor off, blink off
+                    data_next = 8'h27;
+                    rs_next = 1'b0;
+                    rw_next = 1'b1;
+                    en_next = 1'b0;
+                    state_next = STATE_ACK;
+                end else if (init_counter < 16'h4) begin
+                    // Clear display
+                    data_next = 8'b00000011;
                     rs_next = 1'b0;
                     rw_next = 1'b0;
                     en_next = 1'b1;
@@ -91,76 +93,23 @@ module master_i2c (
 
             STATE_IDLE: begin
                 // Idle state, waiting for commands
-                en_next = 1'b0;
+                en_next = 8'h0;
             end
 
             STATE_WRITE: begin
                 // Write data
-                en_next = 1'b0;
+                en_next = 8'h4;
                 state_next = STATE_IDLE;
             end
         endcase
     end
 
     // Output assignments
-    assign data = data_reg;
-    assign rs = rs_reg;
-    assign rw = rw_reg;
-    assign en = en_reg;
-
+ //   assign data = lcd_data;
+ //   assign rs = lcd_rs;
+ //   assign rw = lcd_rw;
+ //   assign en = lcd_en;
+		assign sda = i2c_sda;
+		assign scl = i2c_scl;
+		
 endmodule
-/*
-    // State definitions
-    reg [3:0] state;
-    parameter IDLE = 4'd0;
-    parameter START = 4'd1;
-    parameter SEND = 4'd2;
-    parameter STOP = 4'd3;
-
-    reg [7:0] data;
-    reg [2:0] bit_cnt;
-
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            state <= IDLE;
-            sda <= 1'b1;
-            scl <= 1'b1;
-            data <= 8'd0;
-            bit_cnt <= 3'd7;
-        end else begin
-            case (state)
-                IDLE: begin
-                    sda <= 1'b1;
-                    scl <= 1'b1;
-                    if (start) begin
-                        state <= START;
-                        data <= data_in;
-                        bit_cnt <= 3'd7;
-                    end
-                end
-                START: begin
-                    sda <= 1'b0;
-                    scl <= 1'b1;
-                    state <= SEND;
-                end
-                SEND: begin
-                    scl <= 1'b0;
-                    sda <= data[bit_cnt];
-                    scl <= 1'b1;
-                    if (bit_cnt == 0)
-                        state <= STOP;
-                    else
-                        bit_cnt <= bit_cnt - 3'd1;
-                end
-                STOP: begin
-                    scl <= 1'b1;
-                    sda <= 1'b1;
-                    state <= IDLE;
-                end
-            endcase
-        end
-    end
-	 
-	 
-endmodule
-*/
